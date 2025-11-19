@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 // Tambahkan 'TouchableOpacity'
 import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
-import { auth } from './firebaseConfig';
+import { auth } from '../firebaseConfig';
 import { createUserWithEmailAndPassword } from "firebase/auth";
+
+import { globalStyles, Colors } from '../Styles/GlobalStyles';
 
 // Terima prop 'navigation'
 export default function RegisterScreen({ navigation }) {
@@ -21,7 +23,7 @@ export default function RegisterScreen({ navigation }) {
         console.log('User berhasil terdaftar:', user.email);
         Alert.alert('Sukses', 'Akun berhasil didaftarkan! Silakan login.');
         // Setelah daftar, otomatis pindah ke layar Login
-        navigation.navigate('Login'); 
+        navigation.navigate('Login');
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -38,10 +40,11 @@ export default function RegisterScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Daftar Akun Baru</Text>
+    // --- (GUNAKAN STYLE GLOBAL) ---
+    <View style={globalStyles.container}>
+      <Text style={globalStyles.title}>Daftar Akun Baru</Text>
       <TextInput
-        style={styles.input}
+        style={globalStyles.input} // <-- Gunakan global
         placeholder="Email"
         onChangeText={setEmail}
         value={email}
@@ -49,49 +52,29 @@ export default function RegisterScreen({ navigation }) {
         autoCapitalize="none"
       />
       <TextInput
-        style={styles.input}
+        style={globalStyles.input} // <-- Gunakan global
         placeholder="Password (min. 6 karakter)"
         onChangeText={setPassword}
         value={password}
         secureTextEntry
       />
-      <Button title="Daftar" onPress={handleRegister} />
+      {/* Gunakan warna global */}
+      <Button title="Daftar" onPress={handleRegister} color={Colors.primary} />
 
-      {/* === TOMBOL BARU KE LOGIN === */}
       <TouchableOpacity 
-        style={styles.loginLink}
-        onPress={() => navigation.navigate('Login')} // Navigasi ke 'Login'
+        style={localStyles.loginLink} // <-- Gunakan style lokal
+        onPress={() => navigation.navigate('Login')}
       >
-        <Text style={styles.loginText}>
-          Sudah punya akun? <Text style={styles.loginButtonText}>Login</Text>
+        <Text style={localStyles.loginText}>
+          Sudah punya akun? <Text style={localStyles.loginButtonText}>Login</Text>
         </Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-// Tambahkan styling untuk link login
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 16,
-    backgroundColor: 'white',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-  },
+// --- (StyleSheet lokal jadi lebih kecil) ---
+const localStyles = StyleSheet.create({
   loginLink: {
     marginTop: 20,
   },
@@ -101,7 +84,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   loginButtonText: {
-    color: '#007BFF',
+    color: Colors.primary, // <-- Gunakan warna global
     fontWeight: 'bold',
   }
 });

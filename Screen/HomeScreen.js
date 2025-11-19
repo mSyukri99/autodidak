@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native';
-import { db, auth } from './firebaseConfig'; // <-- IMPOR 'auth' JUGA
-import { 
-  collection, 
-  addDoc, 
-  onSnapshot, 
+import { db, auth } from '../firebaseConfig'; // <-- IMPOR 'auth' JUGA
+import {
+  collection,
+  addDoc,
+  onSnapshot,
   query,
   doc,
   updateDoc,
-  deleteDoc  
-} from "firebase/firestore"; 
+  deleteDoc
+} from "firebase/firestore";
 import { signOut } from 'firebase/auth'; // <-- IMPOR FUNGSI SIGNOUT
+
+import { globalStyles, Colors } from '../Styles/GlobalStyles';
 
 // Terima prop 'navigation'
 export default function HomeScreen({ navigation }) {
   const [taskName, setTaskName] = useState('');
-  const [tasks, setTasks] = useState([]); 
+  const [tasks, setTasks] = useState([]);
 
   // === FUNGSI LOGOUT BARU ===
   const handleLogout = () => {
@@ -30,7 +32,8 @@ export default function HomeScreen({ navigation }) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Button onPress={handleLogout} title="Logout" color="red" />
+        // Gunakan warna global
+        <Button onPress={handleLogout} title="Logout" color={Colors.danger} />
       ),
     });
   }, [navigation]);
@@ -42,7 +45,7 @@ export default function HomeScreen({ navigation }) {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const tasksArray = [];
       querySnapshot.forEach((doc) => {
-        tasksArray.push({ id: doc.id, ...doc.data() }); 
+        tasksArray.push({ id: doc.id, ...doc.data() });
       });
       setTasks(tasksArray);
     });
@@ -68,7 +71,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   const handleUpdateTask = async (taskId, currentCompletedStatus) => {
-    const taskRef = doc(db, "tasks", taskId); 
+    const taskRef = doc(db, "tasks", taskId);
     try {
       await updateDoc(taskRef, {
         completed: !currentCompletedStatus
@@ -88,72 +91,64 @@ export default function HomeScreen({ navigation }) {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.taskItem}>
+    <View style={localStyles.taskItem}>
       <Text style={[
-        styles.taskText, 
-        item.completed ? styles.taskCompleted : null
+        localStyles.taskText,
+        item.completed ? localStyles.taskCompleted : null
       ]}>
         {item.name}
       </Text>
-      <View style={styles.buttonContainer}>
+      <View style={localStyles.buttonContainer}>
         <TouchableOpacity
-          style={[styles.button, styles.updateButton]}
+          style={[localStyles.button, localStyles.updateButton]}
           onPress={() => handleUpdateTask(item.id, item.completed)}
         >
-          <Text style={styles.buttonText}>{item.completed ? 'Batal' : 'Selesai'}</Text>
+          <Text style={localStyles.buttonText}>{item.completed ? 'Batal' : 'Selesai'}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, styles.deleteButton]}
+          style={[localStyles.button, localStyles.deleteButton]}
           onPress={() => handleDeleteTask(item.id)}
         >
-          <Text style={styles.buttonText}>Hapus</Text>
+          <Text style={localStyles.buttonText}>Hapus</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      {/* Kita pindahkan Judul ke header, jadi ini bisa dihapus/di-komen */}
-      {/* <Text style={styles.title}>Daftar Tugas</Text> */} 
+    // --- (Gunakan style LOKAL untuk container) ---
+    <View style={localStyles.container}>
       <TextInput
-        style={styles.input}
+        style={globalStyles.input} // <-- Gunakan global
         placeholder="Nama Tugas Baru"
         onChangeText={setTaskName}
         value={taskName}
       />
-      <Button title="Tambah Tugas" onPress={handleAddTask} />
+      {/* Gunakan warna global */}
+      <Button title="Tambah Tugas" onPress={handleAddTask} color={Colors.primary} />
+
       <FlatList
         data={tasks}
         renderItem={renderItem}
         keyExtractor={item => item.id}
-        style={styles.list}
+        style={localStyles.list}
       />
     </View>
   );
 }
 
-// === (Styling Anda, tidak ada yang berubah kecuali menghapus 'title') ===
-const styles = StyleSheet.create({
+// --- (StyleSheet lokal dirapikan dengan Colors) ---
+const localStyles = StyleSheet.create({
+  // Container ini LOKAL, khusus untuk HomeScreen
   container: {
     flex: 1,
     padding: 16,
-    // paddingTop: 50, // Kita hapus karena sudah ada header
-  },
-  // title: { ... } // Boleh dihapus
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 12,
-    paddingHorizontal: 8,
   },
   list: {
     marginTop: 20,
   },
   taskItem: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: Colors.light, // <-- Gunakan global
     padding: 15,
     borderRadius: 5,
     marginBottom: 10,
@@ -169,7 +164,7 @@ const styles = StyleSheet.create({
   },
   taskCompleted: {
     textDecorationLine: 'line-through',
-    color: '#999',
+    color: Colors.grey, // <-- Gunakan global
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -181,13 +176,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   buttonText: {
-    color: 'white',
+    color: Colors.white, // <-- Gunakan global
     fontWeight: 'bold',
   },
   updateButton: {
-    backgroundColor: '#007BFF',
+    backgroundColor: Colors.primary, // <-- Gunakan global
   },
   deleteButton: {
-    backgroundColor: '#DC3545',
+    backgroundColor: Colors.danger, // <-- Gunakan global
   }
+  // 'input' sudah dihapus dari sini karena sekarang global
 });

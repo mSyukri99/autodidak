@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 // Tambahkan 'TouchableOpacity' untuk membuat tombol kustom
 import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
-import { auth } from './firebaseConfig';
+import { auth } from '../firebaseConfig';
 import { signInWithEmailAndPassword } from "firebase/auth";
+
+import { globalStyles, Colors } from '../Styles/GlobalStyles';
 
 // Terima prop 'navigation'
 export default function LoginScreen({ navigation }) {
@@ -28,10 +30,11 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Selamat Datang!</Text>
+    // --- (GUNAKAN STYLE GLOBAL) ---
+    <View style={globalStyles.container}>
+      <Text style={[globalStyles.title, { fontSize: 28 }]}>Selamat Datang!</Text>
       <TextInput
-        style={styles.input}
+        style={globalStyles.input} // <-- Gunakan global
         placeholder="Email"
         onChangeText={setEmail}
         value={email}
@@ -39,51 +42,34 @@ export default function LoginScreen({ navigation }) {
         autoCapitalize="none"
       />
       <TextInput
-        style={styles.input}
+        style={globalStyles.input} // <-- Gunakan global
         placeholder="Password"
         onChangeText={setPassword}
         value={password}
         secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
+      {/* Gunakan warna global */}
+      <Button title="Login" onPress={handleLogin} color={Colors.primary} />
 
-      {/* === TOMBOL BARU KE REGISTER === */}
-      <TouchableOpacity 
-        style={styles.registerLink}
-        onPress={() => navigation.navigate('Register')} // Navigasi ke 'Register'
+      <TouchableOpacity
+        style={localStyles.registerLink} // <-- Gunakan style lokal
+        onPress={() => navigation.navigate('Register')}
       >
-        <Text style={styles.registerText}>
-          Belum punya akun? <Text style={styles.registerButtonText}>Daftar di sini</Text>
+        <Text style={localStyles.registerText}>
+          Belum punya akun?
+          <Text style={localStyles.registerButtonText}>Daftar di sini</Text>
         </Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-// Tambahkan styling untuk link register
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 16,
-    backgroundColor: 'white', // Tambah background putih
-  },
-  title: {
-    fontSize: 28, // Perbesar judul
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-  },
+// --- (PERHATIKAN) ---
+// StyleSheet lokal sekarang JAUH LEBIH KECIL
+// dan hanya berisi style yang spesifik untuk layar ini.
+const localStyles = StyleSheet.create({
   registerLink: {
-    marginTop: 20, // Beri jarak dari tombol Login
+    marginTop: 20,
   },
   registerText: {
     textAlign: 'center',
@@ -91,7 +77,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   registerButtonText: {
-    color: '#007BFF', // Warna biru
+    color: Colors.primary, // <-- Gunakan warna global
     fontWeight: 'bold',
   }
 });

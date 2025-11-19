@@ -7,10 +7,10 @@ import { onAuthStateChanged } from 'firebase/auth';
 // Impor auth dari file config kita
 import { auth } from './firebaseConfig';
 
-// Impor semua layar Anda
-import LoginScreen from './LoginScreen';
-import RegisterScreen from './RegisterScreen';
-import HomeScreen from './HomeScreen';
+// Impor semua Screen
+import LoginScreen from './Screen/LoginScreen';
+import RegisterScreen from './Screen/RegisterScreen';
+import HomeScreen from './Screen/HomeScreen';
 
 // Buat "Stack" navigasi
 const Stack = createNativeStackNavigator();
